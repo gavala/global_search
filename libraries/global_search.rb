@@ -4,7 +4,7 @@ require 'json'
 module SbgGlobalSearch
   module GlobalSearch 
 
-   def get_environment_nodes(role, env=node.chef_environment.downcase, field_list=nil)
+   def get_environment_nodes(role='*', env=node.chef_environment.downcase, field_list=nil)
       real_endpoint = Chef::Config[:chef_server_url].to_s
       real_node_name = Chef::Config[:node_name].to_s
       real_client_key = Chef::Config[:client_key].to_s
