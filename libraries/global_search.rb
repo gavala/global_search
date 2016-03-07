@@ -4,7 +4,7 @@ require 'json'
 module SbgGlobalSearch
   module GlobalSearch 
 
-   def get_environment_nodes(role='*', env=node.chef_environment.downcase, field_list=nil)
+   def get_environment_nodes(env=node.chef_environment.downcase, role='*', field_list=nil)
       real_endpoint = Chef::Config[:chef_server_url].to_s
       real_node_name = Chef::Config[:node_name].to_s
       real_client_key = Chef::Config[:client_key].to_s
@@ -73,7 +73,7 @@ module SbgGlobalSearch
     # @param [String] role the role for which we want a sorted list of members
     # @return [Array] sorted list of node objects in the current environment which belong to the searched role
     def get_role_member_list( role, env=node.chef_environment.downcase )
-        nodes = get_environment_nodes(role, env.downcase)
+        nodes = get_environment_nodes(env.downcase, role)
         if !nodes
           return []
         end
