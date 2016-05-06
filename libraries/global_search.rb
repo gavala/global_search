@@ -1,10 +1,11 @@
 
 require 'json'
+require 'timeout'
 
 module SbgGlobalSearch
   module GlobalSearch 
 
-   def get_environment_nodes(env=node.chef_environment.downcase, role='*', field_list=nil)
+   def get_environment_nodes(env=node.chef_environment.downcase, role='*', field_list=nil, timeout=60)
       real_endpoint = Chef::Config[:chef_server_url].to_s
       real_node_name = Chef::Config[:node_name].to_s
       real_client_key = Chef::Config[:client_key].to_s
@@ -59,9 +60,11 @@ module SbgGlobalSearch
 
         # do the search using partial search
         # this incidentially implements paging for >1000 nodes
-        Chef::Search::Query.new.search( :node, "chef_environment:#{env.upcase} AND role:#{role}", args, &handler );
-        # and sort those by fqdn
-        node.run_state[attr_key].sort! { |m,n| m['name'] <=> n['name'] }
+        Timeout::timeout(timeout) do
+          Chef::Search::Query.new.search( :node, "chef_environment:#{env.upcase} AND role:#{role}", args, &handler );
+          # and sort those by fqdn
+          node.run_state[attr_key].sort! { |m,n| m['name'] <=> n['name'] }
+        end
       end
       # Reset the Chef client config back to the original values
       Chef::Config[:chef_server_url] = real_endpoint
